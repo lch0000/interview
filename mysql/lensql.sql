@@ -142,3 +142,35 @@ select ename, sal, dno
     , rank() over (partition by dno order by sal desc) as rn
     from tb_emp) as tmp
 where rn <= 2;
+
+------------------------------------------------------------------------
+# 查出购买总金额不低于800的用户的总购买金额、总订单数和总购买商品数
+# 分组后的筛选要用having子句
+select user_id as '用户ID'
+  , sum(price * quantity) as '购买总金额'
+  , count(DISTINCT order_no) as '订单总数'
+  , count(quantity) as '购买商品数量'
+  from tb_order_detail
+    inner join tb_product
+      on product = prod_id
+  group by user_id
+having sum(price * quantity) >= 800;
+
+# 查出购买过"catea"产品的用户的平均订单金额
+# with的用法，mysql8中的CTE（公共表表达式语法）
+# 平均订单金额不可以用avg函数来获取，因为订单号相同的只算做一个订单
+with tmp as (
+  select *
+    from tb_order_detail
+      inner join tb_product
+        on product = prod_id
+)
+select user_id as 用户ID
+  , sum(price * quantity) / count(DISTINCT order_no) as 平均订单金额
+  from tmp
+  where user_id in (select user_id
+    from tmp
+    where category = 'catea')
+group by user_id;
+
+explain select * from tb_order_detail;

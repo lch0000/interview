@@ -26,7 +26,7 @@
   - 排序
   - 大数据
 + 中间件
-  - mysql
+  - mysql（sql应知应会、mysql应知应会）
   - redis
   - mq(kafka、rocketmq、rabbitmq)
   - MongoDB
